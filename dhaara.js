@@ -12,9 +12,6 @@
                 font-size: 1.5em !important;
             }
         }
-    `;
-    document.head.appendChild(style);
-})();
 .dhaara-size-buttons,
 .dhaara-thickness-buttons,
 .dhaara-length-buttons {
@@ -82,3 +79,7 @@
     transform: translate(-50%, -50%) rotate(-45deg);
     pointer-events: none;
 }    
+        
+    `;
+    document.head.appendChild(style);
+})();
