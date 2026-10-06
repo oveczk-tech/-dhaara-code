@@ -20,6 +20,8 @@
 
     function initDhaaraButtons() {
 
+        if (document.querySelector('.dhaara-size-buttons')) return;
+
         [
             ['#parameter-id-5', '.dhaara-size-buttons', ['S','M','L','XL']],
             ['select[data-parameter-name="Tloušťka v mm"]', '.dhaara-thickness-buttons'],
@@ -30,7 +32,6 @@
 
             if (!s) return;
 
-            /* zabrání vytvoření tlačítek podruhé */
             if (s.parentNode.querySelector(x[1])) return;
 
             var w = document.createElement('div');
@@ -62,10 +63,7 @@
                         if (b.classList.contains('is-unavailable')) return;
 
                         s.value = o.value;
-
-                        s.dispatchEvent(
-                            new Event('change', { bubbles: true })
-                        );
+                        s.dispatchEvent(new Event('change', { bubbles: true }));
 
                         w.querySelectorAll('button').forEach(function (button) {
                             button.classList.remove('active');
@@ -105,18 +103,16 @@
                     })
                     .forEach(function (o) {
 
-                        var v =
-                            data[
-                                (s.getAttribute('data-parameter-id') || '5')
-                                + '-'
-                                + o.value
-                            ];
+                        var v = data[
+                            (s.getAttribute('data-parameter-id') || '5') +
+                            '-' +
+                            o.value
+                        ];
 
-                        var b =
-                            Array.from(w.querySelectorAll('button'))
-                                .find(function (button) {
-                                    return button.dataset.value === o.value;
-                                });
+                        var b = Array.from(w.querySelectorAll('button'))
+                            .find(function (button) {
+                                return button.dataset.value === o.value;
+                            });
 
                         if (b && v) {
                             b.classList.toggle(
@@ -136,11 +132,20 @@
     }
 
 
-    /* funguje jak při načtení před DOMContentLoaded, tak po něm */
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initDhaaraButtons);
-    } else {
-        initDhaaraButtons();
+    function waitForShoptet() {
+
+        if (
+            document.querySelector('#parameter-id-5') ||
+            document.querySelector('select[data-parameter-name="Tloušťka v mm"]') ||
+            document.querySelector('select[data-parameter-name="Délka"]')
+        ) {
+            initDhaaraButtons();
+            return;
+        }
+
+        setTimeout(waitForShoptet, 200);
     }
+
+    waitForShoptet();
 
 })();
