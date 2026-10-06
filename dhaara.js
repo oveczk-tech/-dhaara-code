@@ -12,9 +12,7 @@
                 font-size: 1.5em !important;
             }
         }
-    `;
-    document.head.appendChild(style);
-})();
+
         @media (min-width: 992px) {
             .thumbnail-slider .splide__list {
                 display: flex !important;
@@ -33,3 +31,6 @@
                 object-fit: cover !important;
             }
         }
+    `;
+    document.head.appendChild(style);
+})();
