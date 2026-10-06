@@ -16,3 +16,7 @@
         object-fit: cover !important;
     }
 }
+#main-slider .splide__track {
+    border: 0 !important;
+    box-shadow: none !important;
+}
