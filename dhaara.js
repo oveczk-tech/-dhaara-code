@@ -149,3 +149,56 @@
     waitForShoptet();
 
 })();
+/* DHAARA – doplnění kategorie Legíny do drobečkové navigace */
+(function () {
+  function fixLeggingsBreadcrumbs() {
+    const breadcrumbs = document.querySelector('.breadcrumbs');
+    const clothing = document.querySelector('#navigation-1');
+    const product = document.querySelector('#navigation-2');
+
+    if (!breadcrumbs || !clothing || !product) return;
+
+    // Pouze detail produktu, kde kategorie Legíny chybí
+    if (
+      !product.querySelector('a') &&
+      !breadcrumbs.querySelector('a[href="/leginy/"]')
+    ) {
+      const category = document.createElement('span');
+
+      category.id = 'dhaara-breadcrumb-leginy';
+      category.setAttribute('itemprop', 'itemListElement');
+      category.setAttribute('itemscope', '');
+      category.setAttribute(
+        'itemtype',
+        'https://schema.org/ListItem'
+      );
+
+      category.innerHTML = `
+        <a href="/leginy/" itemprop="item">
+          <span itemprop="name">Legíny</span>
+        </a>
+        <span class="navigation-bullet">/</span>
+        <meta itemprop="position" content="3">
+      `;
+
+      product.id = 'navigation-3';
+
+      const position = product.querySelector(
+        'meta[itemprop="position"]'
+      );
+
+      if (position) position.setAttribute('content', '4');
+
+      clothing.after(category);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener(
+      'DOMContentLoaded',
+      fixLeggingsBreadcrumbs
+    );
+  } else {
+    fixLeggingsBreadcrumbs();
+  }
+})();
