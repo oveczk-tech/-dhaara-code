@@ -151,54 +151,42 @@
 })();
 /* DHAARA – doplnění kategorie Legíny do drobečkové navigace */
 (function () {
-  function fixLeggingsBreadcrumbs() {
+  function addLeggingsBreadcrumb() {
     const breadcrumbs = document.querySelector('.breadcrumbs');
     const clothing = document.querySelector('#navigation-1');
     const product = document.querySelector('#navigation-2');
 
     if (!breadcrumbs || !clothing || !product) return;
 
-    // Pouze detail produktu, kde kategorie Legíny chybí
-    if (
-      !product.querySelector('a') &&
-      !breadcrumbs.querySelector('a[href="/leginy/"]')
-    ) {
-      const category = document.createElement('span');
+    // Pouze pokud kategorie Legíny chybí
+    if (breadcrumbs.querySelector('#dhaara-breadcrumb-leginy')) return;
+    if (breadcrumbs.querySelector('a[href="/leginy/"]')) return;
 
-      category.id = 'dhaara-breadcrumb-leginy';
-      category.setAttribute('itemprop', 'itemListElement');
-      category.setAttribute('itemscope', '');
-      category.setAttribute(
-        'itemtype',
-        'https://schema.org/ListItem'
-      );
+    const category = document.createElement('span');
+    category.id = 'dhaara-breadcrumb-leginy';
+    category.setAttribute('itemprop', 'itemListElement');
+    category.setAttribute('itemscope', '');
+    category.setAttribute('itemtype', 'https://schema.org/ListItem');
 
-      category.innerHTML = `
-        <a href="/leginy/" itemprop="item">
-          <span itemprop="name">Legíny</span>
-        </a>
-        <span class="navigation-bullet">/</span>
-        <meta itemprop="position" content="3">
-      `;
+    category.innerHTML = `
+      <a href="/leginy/" itemprop="item">
+        <span itemprop="name">Legíny</span>
+      </a>
+      <span class="navigation-bullet">/</span>
+      <meta itemprop="position" content="3">
+    `;
 
-      product.id = 'navigation-3';
+    product.id = 'navigation-3';
 
-      const position = product.querySelector(
-        'meta[itemprop="position"]'
-      );
+    const position = product.querySelector('meta[itemprop="position"]');
+    if (position) position.setAttribute('content', '4');
 
-      if (position) position.setAttribute('content', '4');
-
-      clothing.after(category);
-    }
+    clothing.after(category);
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener(
-      'DOMContentLoaded',
-      fixLeggingsBreadcrumbs
-    );
+    document.addEventListener('DOMContentLoaded', addLeggingsBreadcrumb);
   } else {
-    fixLeggingsBreadcrumbs();
+    addLeggingsBreadcrumb();
   }
 })();
