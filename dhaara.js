@@ -151,16 +151,22 @@
 })();
 /* DHAARA – doplnění kategorie Legíny do drobečkové navigace */
 (function () {
-  function addLeggingsBreadcrumb() {
+  function fixLeggingsBreadcrumb() {
     const breadcrumbs = document.querySelector('.breadcrumbs');
-    const clothing = document.querySelector('#navigation-1');
-    const product = document.querySelector('#navigation-2');
+    if (!breadcrumbs) return;
 
-    if (!breadcrumbs || !clothing || !product) return;
+    // Pouze produkty, jejichž URL začíná /leginy-
+    const path = window.location.pathname;
+    if (!/^\/leginy-/.test(path)) return;
 
-    // Pouze pokud kategorie Legíny chybí
+    // Pokud už kategorie Legíny existuje, nic nedělat
     if (breadcrumbs.querySelector('#dhaara-breadcrumb-leginy')) return;
     if (breadcrumbs.querySelector('a[href="/leginy/"]')) return;
+
+    const clothing = breadcrumbs.querySelector('#navigation-1');
+    const product = breadcrumbs.querySelector('[data-testid="breadcrumbsLastLevel"]');
+
+    if (!clothing || !product) return;
 
     const category = document.createElement('span');
     category.id = 'dhaara-breadcrumb-leginy';
@@ -185,8 +191,8 @@
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', addLeggingsBreadcrumb);
+    document.addEventListener('DOMContentLoaded', fixLeggingsBreadcrumb);
   } else {
-    addLeggingsBreadcrumb();
+    fixLeggingsBreadcrumb();
   }
 })();
