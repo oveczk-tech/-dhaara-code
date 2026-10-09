@@ -149,22 +149,23 @@
     waitForShoptet();
 
 })();
-/* DHAARA – doplnění kategorie Legíny do drobečkové navigace */
+/* DHAARA – stabilní doplnění kategorie Legíny */
 (function () {
   function fixLeggingsBreadcrumb() {
+    // Pouze stránky produktů s URL začínající /leginy-
+    if (!/^\/leginy-/.test(window.location.pathname)) return;
+
     const breadcrumbs = document.querySelector('.breadcrumbs');
     if (!breadcrumbs) return;
 
-    // Pouze produkty, jejichž URL začíná /leginy-
-    const path = window.location.pathname;
-    if (!/^\/leginy-/.test(path)) return;
-
-    // Pokud už kategorie Legíny existuje, nic nedělat
+    // Kategorie už existuje, nic dalšího nevkládat
     if (breadcrumbs.querySelector('#dhaara-breadcrumb-leginy')) return;
     if (breadcrumbs.querySelector('a[href="/leginy/"]')) return;
 
     const clothing = breadcrumbs.querySelector('#navigation-1');
-    const product = breadcrumbs.querySelector('[data-testid="breadcrumbsLastLevel"]');
+    const product = breadcrumbs.querySelector(
+      '[data-testid="breadcrumbsLastLevel"]'
+    );
 
     if (!clothing || !product) return;
 
@@ -172,7 +173,10 @@
     category.id = 'dhaara-breadcrumb-leginy';
     category.setAttribute('itemprop', 'itemListElement');
     category.setAttribute('itemscope', '');
-    category.setAttribute('itemtype', 'https://schema.org/ListItem');
+    category.setAttribute(
+      'itemtype',
+      'https://schema.org/ListItem'
+    );
 
     category.innerHTML = `
       <a href="/leginy/" itemprop="item">
@@ -182,17 +186,38 @@
       <meta itemprop="position" content="3">
     `;
 
+    clothing.after(category);
+
     product.id = 'navigation-3';
 
-    const position = product.querySelector('meta[itemprop="position"]');
-    if (position) position.setAttribute('content', '4');
+    const position = product.querySelector(
+      'meta[itemprop="position"]'
+    );
 
-    clothing.after(category);
+    if (position) {
+      position.setAttribute('content', '4');
+    }
+  }
+
+  function start() {
+    fixLeggingsBreadcrumb();
+
+    // Kontrola při pozdějších změnách DOMu
+    const observer = new MutationObserver(function () {
+      fixLeggingsBreadcrumb();
+    });
+
+    if (document.body) {
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true
+      });
+    }
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', fixLeggingsBreadcrumb);
+    document.addEventListener('DOMContentLoaded', start);
   } else {
-    fixLeggingsBreadcrumb();
+    start();
   }
 })();
