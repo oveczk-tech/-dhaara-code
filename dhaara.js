@@ -149,18 +149,18 @@
     waitForShoptet();
 
 })();
-/* DHAARA – stabilní doplnění kategorie Legíny */
+/* DHAARA – doplnění kategorie Legíny do drobečkové navigace */
 (function () {
   function fixLeggingsBreadcrumb() {
-    // Pouze stránky produktů s URL začínající /leginy-
-    if (!/^\/leginy-/.test(window.location.pathname)) return;
+    if (!/^\/leginy-/.test(location.pathname)) return;
 
     const breadcrumbs = document.querySelector('.breadcrumbs');
     if (!breadcrumbs) return;
 
-    // Kategorie už existuje, nic dalšího nevkládat
-    if (breadcrumbs.querySelector('#dhaara-breadcrumb-leginy')) return;
-    if (breadcrumbs.querySelector('a[href="/leginy/"]')) return;
+    if (
+      breadcrumbs.querySelector('#dhaara-breadcrumb-leginy') ||
+      breadcrumbs.querySelector('a[href="/leginy/"]')
+    ) return;
 
     const clothing = breadcrumbs.querySelector('#navigation-1');
     const product = breadcrumbs.querySelector(
@@ -178,13 +178,10 @@
       'https://schema.org/ListItem'
     );
 
-    category.innerHTML = `
-      <a href="/leginy/" itemprop="item">
-        <span itemprop="name">Legíny</span>
-      </a>
-      <span class="navigation-bullet">/</span>
-      <meta itemprop="position" content="3">
-    `;
+    category.innerHTML =
+      '<a href="/leginy/" itemprop="item"><span itemprop="name">Legíny</span></a>' +
+      '<span class="navigation-bullet">/</span>' +
+      '<meta itemprop="position" content="3">';
 
     clothing.after(category);
 
@@ -194,30 +191,29 @@
       'meta[itemprop="position"]'
     );
 
-    if (position) {
-      position.setAttribute('content', '4');
-    }
+    if (position) position.setAttribute('content', '4');
   }
 
-  function start() {
+  function run() {
     fixLeggingsBreadcrumb();
 
-    // Kontrola při pozdějších změnách DOMu
-    const observer = new MutationObserver(function () {
+    let attempts = 0;
+    const timer = setInterval(function () {
       fixLeggingsBreadcrumb();
-    });
+      attempts++;
 
-    if (document.body) {
-      observer.observe(document.body, {
-        childList: true,
-        subtree: true
-      });
-    }
+      if (
+        document.querySelector('#dhaara-breadcrumb-leginy') ||
+        attempts >= 20
+      ) {
+        clearInterval(timer);
+      }
+    }, 500);
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', start);
+    document.addEventListener('DOMContentLoaded', run);
   } else {
-    start();
+    run();
   }
 })();
