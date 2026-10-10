@@ -149,18 +149,34 @@
     waitForShoptet();
 
 })();
-/* DHAARA – doplnění kategorie Legíny do drobečkové navigace */
+/* DHAARA – doplnění kategorií do drobečkové navigace */
 (function () {
-  function fixLeggingsBreadcrumb() {
-    if (!/^\/leginy-/.test(location.pathname)) return;
+  const categories = [
+    {
+      path: /^\/leginy-/,
+      url: '/leginy/',
+      name: 'Legíny',
+      id: 'dhaara-breadcrumb-leginy'
+    },
+    {
+      path: /^\/sportovni-podprsenka-/,
+      url: '/sportovni-podprsenky-a-topy/',
+      name: 'Sportovní podprsenky a topy',
+      id: 'dhaara-breadcrumb-podprsenky'
+    }
+  ];
+
+  function fixBreadcrumb() {
+    const path = window.location.pathname;
+    const category = categories.find(item => item.path.test(path));
+
+    if (!category) return;
 
     const breadcrumbs = document.querySelector('.breadcrumbs');
     if (!breadcrumbs) return;
 
-    if (
-      breadcrumbs.querySelector('#dhaara-breadcrumb-leginy') ||
-      breadcrumbs.querySelector('a[href="/leginy/"]')
-    ) return;
+    if (breadcrumbs.querySelector('#' + category.id)) return;
+    if (breadcrumbs.querySelector('a[href="' + category.url + '"]')) return;
 
     const clothing = breadcrumbs.querySelector('#navigation-1');
     const product = breadcrumbs.querySelector(
@@ -169,21 +185,23 @@
 
     if (!clothing || !product) return;
 
-    const category = document.createElement('span');
-    category.id = 'dhaara-breadcrumb-leginy';
-    category.setAttribute('itemprop', 'itemListElement');
-    category.setAttribute('itemscope', '');
-    category.setAttribute(
+    const item = document.createElement('span');
+    item.id = category.id;
+    item.setAttribute('itemprop', 'itemListElement');
+    item.setAttribute('itemscope', '');
+    item.setAttribute(
       'itemtype',
       'https://schema.org/ListItem'
     );
 
-    category.innerHTML =
-      '<a href="/leginy/" itemprop="item"><span itemprop="name">Legíny</span></a>' +
+    item.innerHTML =
+      '<a href="' + category.url + '" itemprop="item">' +
+        '<span itemprop="name">' + category.name + '</span>' +
+      '</a>' +
       '<span class="navigation-bullet">/</span>' +
       '<meta itemprop="position" content="3">';
 
-    clothing.after(category);
+    clothing.after(item);
 
     product.id = 'navigation-3';
 
@@ -191,29 +209,27 @@
       'meta[itemprop="position"]'
     );
 
-    if (position) position.setAttribute('content', '4');
+    if (position) {
+      position.setAttribute('content', '4');
+    }
   }
 
-  function run() {
-    fixLeggingsBreadcrumb();
+  function start() {
+    fixBreadcrumb();
 
-    let attempts = 0;
-    const timer = setInterval(function () {
-      fixLeggingsBreadcrumb();
-      attempts++;
+    const observer = new MutationObserver(fixBreadcrumb);
 
-      if (
-        document.querySelector('#dhaara-breadcrumb-leginy') ||
-        attempts >= 20
-      ) {
-        clearInterval(timer);
-      }
-    }, 500);
+    if (document.body) {
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true
+      });
+    }
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', run);
+    document.addEventListener('DOMContentLoaded', start);
   } else {
-    run();
+    start();
   }
 })();
