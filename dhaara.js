@@ -233,50 +233,57 @@
     start();
   }
 })();
-/* DHAARA – filtr Google recenzí */
+/* DHAARA – Google reviews: 5 pozitivních recenzí */
 (function () {
 
   function filterGoogleReviews() {
-    const reviews = document.querySelectorAll(
-      '#google-reviews .review-card'
-    );
+    const reviews = [
+      ...document.querySelectorAll(
+        '#google-reviews .review-card'
+      )
+    ];
 
-    reviews.forEach(function (review) {
+    const positive = reviews.filter(function (review) {
       const stars = review.querySelector('.stars');
-
-      if (!stars) return;
+      if (!stars) return false;
 
       const rating = parseInt(
         stars.getAttribute('aria-label'),
         10
       );
 
-      if (rating < 4) {
-        review.style.setProperty('display', 'none', 'important');
-      } else {
-        review.style.removeProperty('display');
-      }
+      return rating >= 4;
+    });
+
+    reviews.forEach(function (review) {
+      review.style.setProperty('display', 'none', 'important');
+    });
+
+    positive.slice(0, 5).forEach(function (review) {
+      review.style.setProperty('display', 'block', 'important');
     });
   }
 
-  function startObserver() {
+  function init() {
+    const container = document.querySelector('#google-reviews');
 
-    const observer = new MutationObserver(function () {
-      filterGoogleReviews();
-    });
-
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true
-    });
+    if (!container) return;
 
     filterGoogleReviews();
+
+    new MutationObserver(filterGoogleReviews).observe(
+      container,
+      {
+        childList: true,
+        subtree: true
+      }
+    );
   }
 
-  if (document.body) {
-    startObserver();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
   } else {
-    document.addEventListener('DOMContentLoaded', startObserver);
+    init();
   }
 
 })();
