@@ -83,13 +83,14 @@
     pointer-events: none;
 }    
 
-/* DHAARA – Sticky header mobile */
+/* DHAARA – Sticky header mobile fix */
 @media only screen and (max-width: 767px) {
-    .navigation-wrapper {
-        position: -webkit-sticky !important;
+    header#header {
         position: sticky !important;
+        position: -webkit-sticky !important;
         top: 0 !important;
-        z-index: 1000 !important;
+        z-index: 9999 !important;
         background: #fff !important;
     }
 }
+
