@@ -233,25 +233,19 @@
     start();
   }
 })();
-/* DHAARA – Google reviews: 5 pozitivních recenzí */
+/* DHAARA – Google reviews */
 (function () {
 
   function filterGoogleReviews() {
-    const reviews = [
-      ...document.querySelectorAll(
-        '#google-reviews .review-card'
-      )
-    ];
+    const grid = document.querySelector('#google-reviews');
+
+    if (!grid) return;
+
+    const reviews = [...grid.querySelectorAll('.review-card')];
 
     const positive = reviews.filter(function (review) {
       const stars = review.querySelector('.stars');
-      if (!stars) return false;
-
-      const rating = parseInt(
-        stars.getAttribute('aria-label'),
-        10
-      );
-
+      const rating = parseInt(stars?.getAttribute('aria-label'), 10);
       return rating >= 4;
     });
 
@@ -264,26 +258,23 @@
     });
   }
 
-  function init() {
-    const container = document.querySelector('#google-reviews');
-
-    if (!container) return;
-
+  function start() {
     filterGoogleReviews();
 
-    new MutationObserver(filterGoogleReviews).observe(
-      container,
-      {
+    const grid = document.querySelector('#google-reviews');
+
+    if (grid) {
+      new MutationObserver(filterGoogleReviews).observe(grid, {
         childList: true,
         subtree: true
-      }
-    );
+      });
+    }
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
+    document.addEventListener('DOMContentLoaded', start);
   } else {
-    init();
+    start();
   }
 
 })();
