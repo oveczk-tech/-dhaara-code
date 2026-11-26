@@ -82,3 +82,14 @@
     transform: translate(-50%, -50%) rotate(-45deg);
     pointer-events: none;
 }    
+
+/* DHAARA – Sticky header mobile */
+@media only screen and (max-width: 767px) {
+    .navigation-wrapper {
+        position: -webkit-sticky !important;
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 1000 !important;
+        background: #fff !important;
+    }
+}
