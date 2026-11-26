@@ -233,42 +233,34 @@
     start();
   }
 })();
-/* DHAARA – Google reviews */
+/* DHAARA – Google reviews filter */
 (function () {
+  function applyFilter() {
+    const cards = document.querySelectorAll(
+      '#google-reviews .review-card'
+    );
 
-  function filterGoogleReviews() {
-    const grid = document.querySelector('#google-reviews');
+    if (!cards.length) return;
 
-    if (!grid) return;
+    cards.forEach(function (card) {
+      const stars = card.querySelector('.stars');
+      const rating = parseInt(
+        stars?.getAttribute('aria-label') || '0',
+        10
+      );
 
-    const reviews = [...grid.querySelectorAll('.review-card')];
-
-    const positive = reviews.filter(function (review) {
-      const stars = review.querySelector('.stars');
-      const rating = parseInt(stars?.getAttribute('aria-label'), 10);
-      return rating >= 4;
-    });
-
-    reviews.forEach(function (review) {
-      review.style.setProperty('display', 'none', 'important');
-    });
-
-    positive.slice(0, 5).forEach(function (review) {
-      review.style.setProperty('display', 'block', 'important');
+      card.style.setProperty(
+        'display',
+        rating >= 4 ? 'block' : 'none',
+        'important'
+      );
     });
   }
 
   function start() {
-    filterGoogleReviews();
+    applyFilter();
 
-    const grid = document.querySelector('#google-reviews');
-
-    if (grid) {
-      new MutationObserver(filterGoogleReviews).observe(grid, {
-        childList: true,
-        subtree: true
-      });
-    }
+    setInterval(applyFilter, 500);
   }
 
   if (document.readyState === 'loading') {
@@ -276,5 +268,4 @@
   } else {
     start();
   }
-
 })();
