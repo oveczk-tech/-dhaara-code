@@ -251,31 +251,32 @@
         10
       );
 
-      review.style.display = rating >= 4 ? '' : 'none';
+      if (rating < 4) {
+        review.style.setProperty('display', 'none', 'important');
+      } else {
+        review.style.removeProperty('display');
+      }
     });
   }
 
-  function initReviewFilter() {
-    const container = document.querySelector('#google-reviews');
-
-    if (!container) return;
-
-    filterGoogleReviews();
+  function startObserver() {
 
     const observer = new MutationObserver(function () {
       filterGoogleReviews();
     });
 
-    observer.observe(container, {
+    observer.observe(document.body, {
       childList: true,
       subtree: true
     });
+
+    filterGoogleReviews();
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initReviewFilter);
+  if (document.body) {
+    startObserver();
   } else {
-    initReviewFilter();
+    document.addEventListener('DOMContentLoaded', startObserver);
   }
 
 })();
