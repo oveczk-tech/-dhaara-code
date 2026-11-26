@@ -233,39 +233,81 @@
     start();
   }
 })();
-/* DHAARA – Google reviews filter */
+/* DHAARA – Google reviews: load more */
 (function () {
-  function applyFilter() {
-    const cards = document.querySelectorAll(
-      '#google-reviews .review-card'
-    );
 
-    if (!cards.length) return;
+  let visibleCount = 5;
+  let grid = null;
+  let button = null;
 
-    cards.forEach(function (card) {
+  function getPositiveReviews() {
+    return [...grid.querySelectorAll('.review-card')].filter(card => {
       const stars = card.querySelector('.stars');
       const rating = parseInt(
         stars?.getAttribute('aria-label') || '0',
         10
       );
 
-      card.style.setProperty(
-        'display',
-        rating >= 4 ? 'block' : 'none',
-        'important'
-      );
+      return rating >= 4;
     });
   }
 
-  function start() {
-    applyFilter();
+  function renderReviews() {
+    if (!grid) return;
 
-    setInterval(applyFilter, 500);
+    const cards = [...grid.querySelectorAll('.review-card')];
+    const positive = getPositiveReviews();
+
+    cards.forEach(card => {
+      card.style.setProperty('display', 'none', 'important');
+    });
+
+    positive.slice(0, visibleCount).forEach(card => {
+      card.style.setProperty('display', 'block', 'important');
+    });
+
+    if (button) {
+      button.style.display =
+        positive.length > visibleCount ? '' : 'none';
+    }
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', start);
-  } else {
-    start();
+  function init() {
+    grid = document.querySelector('#google-reviews');
+
+    if (!grid) return;
+
+    button = document.querySelector(
+      '.g-review-wrap > a.btn.btn-primary'
+    );
+
+    if (button && !button.dataset.dhaaraLoadMore) {
+      button.dataset.dhaaraLoadMore = 'true';
+
+      button.addEventListener('click', function (e) {
+        e.preventDefault();
+
+        visibleCount += 5;
+        renderReviews();
+      });
+    }
+
+    renderReviews();
+
+    new MutationObserver(renderReviews).observe(grid, {
+      childList: true,
+      subtree: true
+    });
   }
+
+  function waitForReviews() {
+    if (document.querySelector('#google-reviews')) {
+      init();
+    } else {
+      setTimeout(waitForReviews, 300);
+    }
+  }
+
+  waitForReviews();
+
 })();
