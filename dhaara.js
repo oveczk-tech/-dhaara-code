@@ -233,3 +233,49 @@
     start();
   }
 })();
+/* DHAARA – filtr Google recenzí */
+(function () {
+
+  function filterGoogleReviews() {
+    const reviews = document.querySelectorAll(
+      '#google-reviews .review-card'
+    );
+
+    reviews.forEach(function (review) {
+      const stars = review.querySelector('.stars');
+
+      if (!stars) return;
+
+      const rating = parseInt(
+        stars.getAttribute('aria-label'),
+        10
+      );
+
+      review.style.display = rating >= 4 ? '' : 'none';
+    });
+  }
+
+  function initReviewFilter() {
+    const container = document.querySelector('#google-reviews');
+
+    if (!container) return;
+
+    filterGoogleReviews();
+
+    const observer = new MutationObserver(function () {
+      filterGoogleReviews();
+    });
+
+    observer.observe(container, {
+      childList: true,
+      subtree: true
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initReviewFilter);
+  } else {
+    initReviewFilter();
+  }
+
+})();
